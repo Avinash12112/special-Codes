@@ -1,0 +1,35 @@
+// Online C compiler to run C program online
+#include <stdio.h>
+
+short sine(short angle) {
+short angle_sqr;
+/*second quadrant*/
+if((angle>16383)&&(angle<=32767))
+{
+    angle = 32767 - angle;
+}
+/*Third quadrant*/
+if((angle<-16383)&&(angle>=-32768))
+{
+    angle = -(angle + 32768);
+}
+angle_sqr = ((int)angle*angle)>>15;
+return ((long long)angle*(0x6487ED51 + 
+       (((long long)angle_sqr*(-0x295779CC +
+       (((long long)angle_sqr*(0x0519AF1A +
+       (((long long)angle_sqr*(-0x4C6463 +
+       (((long long)angle_sqr*0x0002A0F0)>>13)))>>13)))>>13))/8191)))>>29); 
+}
+
+short main() {
+    short val = 0,sine_val;
+    // Write C code here
+    // printf("Hello world");
+    while(1)
+    {
+        sine_val = sine(val);
+        printf("%d\n",sine_val);
+        val+=39;
+    }
+    return 0;
+}
