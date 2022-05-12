@@ -1,0 +1,77 @@
+uint16_t SvmStdn_F16_FC(const GMCLIB_2COOR_ALBE_T_F16 *psIn,
+                                     GMCLIB_3COOR_T_F16 *psOut)
+{
+	int sec_a=0,sec_b=0,sec_c=0;
+	int t_o = 0;
+	uint16_t sector = 0;
+
+	sec_a = psIn->f16Beta;										//Beta;
+	sec_b = ((-psIn->f16Beta>>1)+(((int32_t)sqrt3div2*psIn->f16Alpha)>>15));			//(-0.5*Beta+(0.866*alpha));
+	sec_c = ((-psIn->f16Beta>>1)-(((int32_t)sqrt3div2*psIn->f16Alpha)>>15));			//(-0.5*Beta-(0.866*alpha));
+
+    if(sec_a>=0)
+    {
+        if(sec_b>=0)
+        {												//	sector 1
+    		t_o = (32767 - (sec_a+sec_b))>>1;							//	t_1 = sec_b, t_2 =sec_a
+    		psOut->f16A = sec_a+sec_b+(t_o);
+    		psOut->f16B  = sec_a+(t_o);
+    		psOut->f16C  = (t_o);
+            sector = 1;
+        }
+        else
+        {
+            if(sec_c>=0)
+            {												//	sector 3
+        		t_o = (32767 - (sec_a+sec_c))>>1;						//	t_1 = sec_a, t_2 =sec_c
+        		psOut->f16A = (t_o);
+        		psOut->f16B = sec_a+sec_c+(t_o);
+        		psOut->f16C = sec_c+(t_o);
+                sector = 3;
+            }
+            else
+            {												//	sector 2
+        		t_o = (32767 + (sec_c+sec_b))>>1;						//	t_1 = -sec_c, t_2 =-sec_b
+        		psOut->f16A = -sec_c+(t_o);
+        		psOut->f16B = -(sec_c+sec_b)+(t_o);
+        		psOut->f16C = (t_o);
+                sector = 2;
+            }
+
+        }
+    }
+    else
+    {
+        if(sec_b>=0)
+        {
+            if(sec_c>=0)
+            {												//	sector 5
+        		t_o = (32767 - (sec_c+sec_b))>>1; 						//	t_1 = sec_c, t_2 =sec_b
+        		psOut->f16A = sec_b+(t_o);
+        		psOut->f16B = (t_o);
+        		psOut->f16C = sec_c+sec_b+(t_o);
+                sector = 5;
+            }
+            else
+            {												//	sector 6
+        		t_o = (32767 + (sec_a+sec_c))>>1; 						//	t_1 = -sec_a, t_2 =-sec_c
+        		psOut->f16A = -(sec_a+sec_c)+(t_o);
+        		psOut->f16B = (t_o);
+        		psOut->f16C = -sec_a+(t_o);
+                sector = 6;
+            }
+        }
+        else
+        {
+            if(sec_c>=0)
+            {												//	sector 4
+        		t_o = (32767 + (sec_a+sec_b))>>1;						//	t_1 = -sec_b, t_2 =-sec_a
+        		psOut->f16A = (t_o);
+        		psOut->f16B = -sec_b+(t_o);
+        		psOut->f16C = -(sec_a+sec_b)+(t_o);
+                sector = 4;
+            }
+        }
+    }
+	return sector;
+}
